@@ -1,12 +1,145 @@
 import { Home, Music, Mic2, Disc3, Radio, Search, Bell, Settings, User, Plus, Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, Volume2, List } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+
+// Free music tracks from various artists (royalty-free) - 10 songs
+const tracks = [
+  { id: 1, title: "Sunny", artist: "Bensound", preview: "https://www.bensound.com/bensound-music/bensound-sunny.mp3", duration: 30 },
+  { id: 2, title: "Energy", artist: "Bensound", preview: "https://www.bensound.com/bensound-music/bensound-energy.mp3", duration: 30 },
+  { id: 3, title: "Jazzy Frenchy", artist: "Bensound", preview: "https://www.bensound.com/bensound-music/bensound-jazzyfrenchy.mp3", duration: 30 },
+  { id: 4, title: "Creative Minds", artist: "Bensound", preview: "https://www.bensound.com/bensound-music/bensound-creativeminds.mp3", duration: 30 },
+  { id: 5, title: "Acoustic Breeze", artist: "Bensound", preview: "https://www.bensound.com/bensound-music/bensound-acousticbreeze.mp3", duration: 30 },
+  { id: 6, title: "Tenderness", artist: "Bensound", preview: "https://www.bensound.com/bensound-music/bensound-tenderness.mp3", duration: 30 },
+  { id: 7, title: "Once Again", artist: "Bensound", preview: "https://www.bensound.com/bensound-music/bensound-onceagain.mp3", duration: 30 },
+  { id: 8, title: "Sweet", artist: "Bensound", preview: "https://www.bensound.com/bensound-music/bensound-sweet.mp3", duration: 30 },
+  { id: 9, title: "Love", artist: "Bensound", preview: "https://www.bensound.com/bensound-music/bensound-love.mp3", duration: 30 },
+  { id: 10, title: "Piano Moment", artist: "Bensound", preview: "https://www.bensound.com/bensound-music/bensound-pianomoment.mp3", duration: 30 },
+];
 
 function App() {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTrack, setCurrentTrack] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const [volume, setVolume] = useState(0.7);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  // Set initial volume
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.volume = volume;
+    }
+  }, [volume]);
+
+  // Color rotation for bottom player
+  const [colorIndex, setColorIndex] = useState(0);
+  const pastelColors = [
+    { ring: 'ring-rose-300/40', shadow: 'rgba(251,207,232,0.4)' },      // Rosa
+    { ring: 'ring-purple-300/40', shadow: 'rgba(216,180,254,0.4)' },    // Púrpura
+    { ring: 'ring-blue-300/40', shadow: 'rgba(147,197,253,0.4)' },      // Azul
+    { ring: 'ring-cyan-300/40', shadow: 'rgba(103,232,249,0.4)' },      // Cyan
+    { ring: 'ring-green-300/40', shadow: 'rgba(134,239,172,0.4)' },     // Verde
+    { ring: 'ring-yellow-300/40', shadow: 'rgba(253,224,71,0.4)' },     // Amarillo
+    { ring: 'ring-orange-300/40', shadow: 'rgba(253,186,116,0.4)' },    // Naranja
+  ];
+
+  // Change color every 3 seconds when playing
+  useEffect(() => {
+    if (!isPlaying) return;
+
+    const interval = setInterval(() => {
+      setColorIndex((prev) => (prev + 1) % pastelColors.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [isPlaying, pastelColors.length]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const updateProgress = () => {
+      if (audio.duration) {
+        setProgress((audio.currentTime / audio.duration) * 100);
+      }
+    };
+
+    const handleEnded = () => {
+      setIsPlaying(false);
+      setProgress(0);
+      // Auto next track
+      if (currentTrack < tracks.length - 1) {
+        setCurrentTrack(currentTrack + 1);
+      }
+    };
+
+    audio.addEventListener('timeupdate', updateProgress);
+    audio.addEventListener('ended', handleEnded);
+
+    return () => {
+      audio.removeEventListener('timeupdate', updateProgress);
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, [currentTrack]);
+
+
+  const togglePlay = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (isPlaying) {
+      audio.pause();
+    } else {
+      audio.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  const nextTrack = () => {
+    if (currentTrack < tracks.length - 1) {
+      setCurrentTrack(currentTrack + 1);
+      setProgress(0);
+      // Auto-play next track
+      setTimeout(() => {
+        const audio = audioRef.current;
+        if (audio) {
+          audio.play();
+          setIsPlaying(true);
+        }
+      }, 100);
+    }
+  };
+
+  const prevTrack = () => {
+    if (currentTrack > 0) {
+      setCurrentTrack(currentTrack - 1);
+      setProgress(0);
+      // Auto-play previous track
+      setTimeout(() => {
+        const audio = audioRef.current;
+        if (audio) {
+          audio.play();
+          setIsPlaying(true);
+        }
+      }, 100);
+    }
+  };
+
+  const selectTrack = (index: number) => {
+    setCurrentTrack(index);
+    setProgress(0);
+    // Auto-play when selecting a track
+    setTimeout(() => {
+      const audio = audioRef.current;
+      if (audio) {
+        audio.play();
+        setIsPlaying(true);
+      }
+    }, 100);
+  };
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Background Image */}
+      {/* Background Image with Audio Reactive Overlay */}
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{
@@ -14,12 +147,13 @@ function App() {
         }}
       />
 
+
       {/* Main Container */}
       <div className="relative min-h-screen p-8 flex items-center justify-center">
         <div className="w-full max-w-[1400px] h-[850px] relative">
 
           {/* 1. Top Browser Bar - Floating */}
-          <div className="absolute top-0 left-0 right-0 z-30 h-16 rounded-t-3xl backdrop-blur-xl bg-white/10 border border-white/20 flex items-center px-6 gap-4 shadow-2xl">
+          <div className={`absolute top-0 left-0 right-0 z-30 h-16 rounded-3xl backdrop-blur-xl bg-white/10 border border-white/20 flex items-center px-6 gap-4 shadow-2xl transition-all ${isPlaying ? 'ring-1 ring-purple-300/20' : ''}`}>
             <div className="flex items-center gap-3">
               <button className="w-8 h-8 rounded-lg backdrop-blur-xl bg-white/10 flex items-center justify-center hover:bg-white/20 transition-all">
                 <span className="text-white/70 text-sm">←</span>
@@ -45,16 +179,16 @@ function App() {
             </div>
           </div>
 
-          {/* 2. Left Icon Bar - Floating */}
-          <div className="absolute left-0 top-20 bottom-28 z-20 w-16 rounded-3xl backdrop-blur-xl bg-white/10 border border-white/20 flex flex-col items-center py-6 gap-6 shadow-2xl">
+          {/* 2. Left Icon Bar - Floating with pulse */}
+          <div className={`absolute left-0 top-20 bottom-28 z-20 w-16 rounded-3xl backdrop-blur-xl bg-white/10 border border-white/20 flex flex-col items-center py-6 gap-6 shadow-2xl transition-all ${isPlaying ? 'ring-1 ring-orange-300/20' : ''}`}>
             <Search className="w-5 h-5 text-white/60 hover:text-white/90 cursor-pointer transition-all" />
             <Bell className="w-5 h-5 text-white/60 hover:text-white/90 cursor-pointer transition-all" />
             <Settings className="w-5 h-5 text-white/60 hover:text-white/90 cursor-pointer transition-all" />
             <User className="w-5 h-5 text-white/60 hover:text-white/90 cursor-pointer transition-all mt-auto" />
           </div>
 
-          {/* 3. Main Content Area - Center with Navigation */}
-          <div className="absolute left-20 right-0 top-20 bottom-28 z-10 rounded-3xl backdrop-blur-xl bg-white/10 border border-white/20 flex shadow-2xl overflow-hidden">
+          {/* 3. Main Content Area - Center with Navigation with pulse */}
+          <div className={`absolute left-20 right-0 top-20 bottom-28 z-10 rounded-3xl backdrop-blur-xl bg-white/10 border border-white/20 flex shadow-2xl overflow-hidden transition-all ${isPlaying ? 'ring-1 ring-cyan-300/20' : ''}`}>
             {/* Left Navigation Menu */}
             <div className="w-56 backdrop-blur-xl bg-white/5 border-r border-white/10 py-6 px-4 overflow-y-auto scrollbar-hide">
               <nav className="space-y-2">
@@ -193,17 +327,42 @@ function App() {
                   <List className="w-4 h-4 text-white/60" />
                 </div>
                 <div className="space-y-2">
-                  <QueueItem title="danielcantu258@gmail.com" artist="Email" image="https://logo.svgcdn.com/logos/google-gmail.png" />
-                  <QueueItem title="+51 929077605" artist="Teléfono" image="https://logo.svgcdn.com/logos/whatsapp-icon.png" />
-                  <QueueItem title="linkedin.com/in/danielcantu56" artist="LinkedIn" image="https://logo.svgcdn.com/devicon/linkedin-original.png" />
-                  <QueueItem title="github.com/SrConej0" artist="GitHub" image="https://logo.svgcdn.com/simple-icons/github-dark.png" />
+                  <QueueItem
+                    title="danielcantu258@gmail.com"
+                    artist="Email"
+                    image="https://logo.svgcdn.com/logos/google-gmail.png"
+                    url="mailto:danielcantu258@gmail.com"
+                  />
+                  <QueueItem
+                    title="+51 929077605"
+                    artist="Teléfono"
+                    image="https://logo.svgcdn.com/logos/whatsapp-icon.png"
+                    url="https://wa.me/51929077605"
+                  />
+                  <QueueItem
+                    title="linkedin.com/in/danielcantu56"
+                    artist="LinkedIn"
+                    image="https://logo.svgcdn.com/devicon/linkedin-original.png"
+                    url="https://www.linkedin.com/in/danielcantu56"
+                  />
+                  <QueueItem
+                    title="github.com/SrConej0"
+                    artist="GitHub"
+                    image="https://logo.svgcdn.com/simple-icons/github-dark.png"
+                    url="https://github.com/SrConej0"
+                  />
                 </div>
               </div>
             </div>
           </div>
 
-          {/* 4. Bottom Player Controls - Floating */}
-          <div className="absolute bottom-0 left-0 right-0 z-30 h-24 rounded-b-3xl backdrop-blur-xl bg-white/10 border border-white/20 px-6 flex items-center gap-6 shadow-2xl">
+          {/* 4. Bottom Player Controls - Floating with dynamic pastel colors */}
+          <div
+            className={`absolute bottom-0 left-0 right-0 z-30 h-24 rounded-3xl backdrop-blur-xl bg-white/10 border border-white/20 px-6 flex items-center gap-6 shadow-2xl transition-all duration-1000 ${isPlaying ? `ring-2 ${pastelColors[colorIndex].ring}` : ''}`}
+            style={{
+              boxShadow: isPlaying ? `0 0 30px ${pastelColors[colorIndex].shadow}` : 'none',
+            }}
+          >
             {/* Song Info */}
             <div className="flex items-center gap-4 w-64">
               <img
@@ -223,11 +382,11 @@ function App() {
                 <button className="text-white/60 hover:text-white transition-all">
                   <Shuffle className="w-4 h-4" />
                 </button>
-                <button className="text-white/60 hover:text-white transition-all">
+                <button onClick={prevTrack} className="text-white/60 hover:text-white transition-all disabled:opacity-30" disabled={currentTrack === 0}>
                   <SkipBack className="w-5 h-5" />
                 </button>
                 <button
-                  onClick={() => setIsPlaying(!isPlaying)}
+                  onClick={togglePlay}
                   className="w-10 h-10 rounded-full bg-white/90 hover:bg-white flex items-center justify-center transition-all shadow-lg"
                 >
                   {isPlaying ?
@@ -235,7 +394,7 @@ function App() {
                     <Play className="w-5 h-5 text-gray-900 ml-0.5" fill="currentColor" />
                   }
                 </button>
-                <button className="text-white/60 hover:text-white transition-all">
+                <button onClick={nextTrack} className="text-white/60 hover:text-white transition-all disabled:opacity-30" disabled={currentTrack === tracks.length - 1}>
                   <SkipForward className="w-5 h-5" />
                 </button>
                 <button className="text-white/60 hover:text-white transition-all">
@@ -245,29 +404,39 @@ function App() {
 
               {/* Progress Bar */}
               <div className="w-full max-w-md flex items-center gap-3">
-                <span className="text-white/60 text-xs">1:23</span>
+                <span className="text-white/60 text-xs">{Math.floor((progress / 100) * 30)}s</span>
                 <div className="flex-1 h-1 bg-white/20 rounded-full overflow-hidden">
-                  <div className="h-full bg-white/80 rounded-full" style={{ width: '45%' }}></div>
+                  <div className="h-full bg-white/80 rounded-full transition-all" style={{ width: `${progress}%` }}></div>
                 </div>
-                <span className="text-white/60 text-xs">3:08</span>
+                <span className="text-white/60 text-xs">30s</span>
               </div>
             </div>
 
-            {/* Track List & Volume */}
-            <div className="w-80 flex items-center gap-4">
-
-              {/* Spotify Embedded Player */}
-              <div className="flex-1 backdrop-blur-xl bg-black/20 rounded-lg overflow-hidden border border-white/10">
-                <iframe
-                  src="https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator&theme=0"
-                  width="100%"
-                  height="80"
-                  frameBorder="0"
-                  allowFullScreen={false}
-                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                  loading="lazy"
-                  className="rounded-lg"
-                ></iframe>
+            {/* Custom Music Player & Volume */}
+            <div className="w-96 flex items-center gap-3">
+              {/* Track List */}
+              <div className="flex-1 backdrop-blur-xl bg-black/20 rounded-lg p-2 border border-white/10 max-h-20 overflow-y-auto scrollbar-hide">
+                <div className="space-y-1">
+                  {tracks.map((track, index) => (
+                    <button
+                      key={track.id}
+                      onClick={() => selectTrack(index)}
+                      className={`w-full flex items-center gap-2 px-2 py-1 rounded hover:bg-white/10 transition-all ${currentTrack === index ? 'bg-white/10' : ''
+                        }`}
+                    >
+                      <div className="w-1 h-1 rounded-full bg-green-400"></div>
+                      <div className="flex-1 text-left min-w-0">
+                        <p className="text-white text-xs truncate">{track.title}</p>
+                        <p className="text-white/40 text-[10px] truncate">{track.artist}</p>
+                      </div>
+                      {currentTrack === index && isPlaying && (
+                        <div className="w-3 h-3 flex items-center justify-center">
+                          <div className="w-1 h-2 bg-green-400 animate-pulse"></div>
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* Volume */}
@@ -275,12 +444,23 @@ function App() {
                 <button className="text-white/60 hover:text-white transition-all">
                   <Volume2 className="w-4 h-4" />
                 </button>
-                <div className="w-16 h-1 bg-white/20 rounded-full overflow-hidden">
-                  <div className="h-full bg-white/80 rounded-full" style={{ width: '70%' }}></div>
+                <div
+                  className="w-16 h-1 bg-white/20 rounded-full overflow-hidden cursor-pointer"
+                  onClick={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const newVolume = Math.max(0, Math.min(1, x / rect.width));
+                    setVolume(newVolume);
+                  }}
+                >
+                  <div className="h-full bg-white/80 rounded-full transition-all" style={{ width: `${volume * 100}%` }}></div>
                 </div>
               </div>
             </div>
           </div>
+
+          {/* Hidden Audio Element */}
+          <audio ref={audioRef} src={tracks[currentTrack].preview} />
 
         </div>
       </div>
@@ -352,9 +532,18 @@ function RecentSong({ image, title, artist, duration }: { image: string; title: 
   );
 }
 
-function QueueItem({ title, artist, image }: { title: string; artist: string; image: string }) {
+function QueueItem({ title, artist, image, url }: { title: string; artist: string; image: string; url?: string }) {
+  const handleClick = () => {
+    if (url) {
+      window.open(url, '_blank');
+    }
+  };
+
   return (
-    <button className="w-full flex items-center gap-4 p-3 rounded-lg hover:bg-white/10 transition-all group">
+    <button
+      onClick={handleClick}
+      className={`w-full flex items-center gap-4 p-3 rounded-lg hover:bg-white/10 transition-all group ${url ? 'cursor-pointer' : ''}`}
+    >
       <img
         src={image}
         alt={title}
