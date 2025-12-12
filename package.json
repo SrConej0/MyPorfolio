@@ -1,8 +1,11 @@
 {
-  "name": "vite-react-typescript-starter",
+  "name": "portfolio-juan-daniel",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "description": "Portfolio profesional de Juan Daniel Cantu Guillen - Desarrollador de Software",
+  "author": "Juan Daniel Cantu Guillen",
+  "homepage": "https://srconej0.github.io/MyPorfolio",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
