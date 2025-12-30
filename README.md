@@ -4,11 +4,14 @@ Portfolio profesional de Juan Daniel Cantu Guillen - Desarrollador de Software e
 
 ## 🚀 Tecnologías
 
-- **Frontend**: React 18 + TypeScript
-- **Build Tool**: Vite
-- **Estilos**: Tailwind CSS
+- **Frontend**: React 18 + TypeScript + Vite
+- **Estilos**: Tailwind CSS + CSS3
 - **Iconos**: Lucide React
-- **Backend**: Supabase
+- **Lenguajes**: JavaScript, TypeScript, Kotlin, PHP
+- **Frameworks**: React, Flutter
+- **Bases de Datos**: PostgreSQL, Firebase
+- **DevOps**: Docker
+- **Otros**: Git, REST APIs
 
 ## 📋 Características
 
@@ -17,7 +20,14 @@ Portfolio profesional de Juan Daniel Cantu Guillen - Desarrollador de Software e
 - 🎨 Animaciones suaves y transiciones
 - 🔍 SEO optimizado
 - ⚡ Rendimiento optimizado con Vite
-- 🎯 Navegación fluida entre secciones
+- 🎯 Navegación fluida entre secciones con scroll suave
+- 🎵 Reproductor de música integrado con Apple Music
+- 📂 Vista de detalle para proyectos y especialidades
+- 🎓 Sección de certificaciones con previsualización de PDFs
+- 💼 Sección de habilidades blandas
+- 🌐 Soporte multiidioma (Español/Inglés)
+- 🌓 Modo oscuro/claro
+- 🔗 Enlaces funcionales a redes sociales y contacto
 
 ## 🛠️ Instalación y Uso
 

@@ -1,4 +1,4 @@
-import { Home, Music, Mic2, Disc3, Radio, Search, Bell, Settings, User, Plus, Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, Volume2, List, Heart, Clock, ArrowLeft, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Home, Music, Mic2, Disc3, Radio, Search, Bell, Settings, User, Plus, Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, Volume2, List, Heart, Clock, ArrowLeft, ChevronLeft, ChevronRight, X, Download } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 
 // Project data with details
@@ -65,6 +65,96 @@ const projectsData = [
   }
 ];
 
+// Specialties data
+const specialtiesData = [
+  {
+    id: 1,
+    title: "Desarrollo Móvil",
+    category: "Especialidad",
+    image: "https://i.postimg.cc/VNqmKRpW/Kotlin.png",
+    description: "Desarrollo de aplicaciones móviles nativas y multiplataforma con enfoque en experiencia de usuario y rendimiento óptimo.",
+    skills: ["Kotlin", "Flutter", "Android SDK", "iOS Development", "React Native", "Mobile UI/UX"],
+    experience: "3+ años",
+    projects: 8,
+    technologies: ["Kotlin", "Flutter", "Dart", "Swift", "Java"]
+  },
+  {
+    id: 2,
+    title: "Desarrollo Web",
+    category: "Especialidad",
+    image: "https://logo.svgcdn.com/logos/javascript.png",
+    description: "Creación de aplicaciones web modernas, responsivas y escalables utilizando las últimas tecnologías del mercado.",
+    skills: ["React", "TypeScript", "Next.js", "Node.js", "REST APIs", "Responsive Design"],
+    experience: "4+ años",
+    projects: 12,
+    technologies: ["JavaScript", "TypeScript", "React", "Next.js", "Tailwind CSS"]
+  },
+  {
+    id: 3,
+    title: "Flutter & Kotlin",
+    category: "Stack",
+    image: "https://i.postimg.cc/HLwd62R6/flutter.png",
+    description: "Stack especializado en desarrollo móvil multiplataforma con Flutter y nativo Android con Kotlin.",
+    skills: ["Flutter Widgets", "State Management", "Kotlin Coroutines", "Material Design", "Firebase Integration"],
+    experience: "3+ años",
+    projects: 6,
+    technologies: ["Flutter", "Dart", "Kotlin", "Firebase", "Android Studio"]
+  },
+  {
+    id: 4,
+    title: "JavaScript & PHP",
+    category: "Stack",
+    image: "https://logo.svgcdn.com/logos/php.png",
+    description: "Stack full-stack para desarrollo web con JavaScript en frontend y PHP en backend.",
+    skills: ["JavaScript ES6+", "PHP 8", "MySQL", "Laravel", "REST APIs", "Authentication"],
+    experience: "4+ años",
+    projects: 10,
+    technologies: ["JavaScript", "PHP", "MySQL", "Laravel", "jQuery"]
+  },
+  {
+    id: 5,
+    title: "Certificaciones",
+    category: "Logros",
+    image: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+    description: "Certificaciones profesionales obtenidas en ISIL que validan mis conocimientos en desarrollo de software, análisis y diseño de sistemas, y despliegue de aplicaciones de calidad.",
+    skills: [],
+    experience: "",
+    projects: 0,
+    technologies: [],
+    certificates: [
+      {
+        title: "TECNOLOGÍAS DE DESARROLLO DE SOFTWARE",
+        institution: "ISIL",
+        date: "2024",
+        link: "https://drive.google.com/file/d/1bvM5wPosC4cdcptquIlcDMZtmzfTHPyY/preview"
+      },
+      {
+        title: "ANÁLISIS Y DISEÑO DE SISTEMAS DE INFORMACIÓN",
+        institution: "ISIL",
+        date: "2024",
+        link: "https://drive.google.com/file/d/1YztaxdNWXMbsNBTCWu2BgaT9vTpQYc3M/preview"
+      },
+      {
+        title: "DESPLIEGUE Y CALIDAD DE SISTEMAS DE INFORMACIÓN",
+        institution: "ISIL",
+        date: "2024",
+        link: "https://drive.google.com/file/d/1rRw8yhS550XeGK6sLgx6O2x3Uab6dCik/preview"
+      }
+    ]
+  },
+  {
+    id: 6,
+    title: "ISIL - Software",
+    category: "Educación",
+    image: "https://i.postimg.cc/6p1YDxJW/channels4-profile.jpg",
+    description: "Ingeniería de Software en ISIL con enfoque en desarrollo de aplicaciones y arquitectura de software.",
+    skills: ["Ingeniería de Software", "Arquitectura de Software", "Bases de Datos", "Programación Orientada a Objetos"],
+    experience: "2022-2025",
+    projects: 0,
+    technologies: ["Java", "Python", "SQL", "UML", "Design Patterns"]
+  }
+];
+
 // Free music tracks from various artists (royalty-free) - 10 songs
 const tracks = [
   { id: 1, title: "Sunny", artist: "Bensound", preview: "https://www.bensound.com/bensound-music/bensound-sunny.mp3", duration: 30 },
@@ -87,14 +177,33 @@ function App() {
   const [language, setLanguage] = useState<'es' | 'en'>('es');
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [selectedProject, setSelectedProject] = useState<number | null>(null);
+  const [selectedSpecialty, setSelectedSpecialty] = useState<number | null>(null);
   const [isDemoMode, setIsDemoMode] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
+
+  // Refs for scroll navigation
+  const headerRef = useRef<HTMLDivElement>(null);
+  const projectsRef = useRef<HTMLDivElement>(null);
+  const skillsRef = useRef<HTMLDivElement>(null);
+  const experienceRef = useRef<HTMLDivElement>(null);
+  const contactRef = useRef<HTMLDivElement>(null);
 
   // Detect system theme preference on mount
   useEffect(() => {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     setTheme(prefersDark ? 'dark' : 'light');
   }, []);
+
+  // Scroll to section function - closes detail views first
+  const scrollToSection = (ref: React.RefObject<HTMLDivElement>) => {
+    // Close any open detail views first
+    setSelectedSpecialty(null);
+    setSelectedProject(null);
+    // Small delay to allow views to close before scrolling
+    setTimeout(() => {
+      ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
 
   // Set initial volume
   useEffect(() => {
@@ -227,7 +336,7 @@ function App() {
       specialties: "Mis Especialidades",
       projects: "Proyectos Destacados",
       technologies: "Tecnologías Principales",
-      experience: "Experiencia Reciente",
+      experience: "Experiencia",
       profile: "Perfil Profesional",
       // Player
       music: "Música",
@@ -339,11 +448,11 @@ function App() {
             {selectedProject === null && (
               <div className="w-56 backdrop-blur-xl bg-white/5 border-r border-white/10 py-6 px-4 overflow-y-auto scrollbar-hide">
                 <nav className="space-y-2">
-                  <NavItem icon={<Home className="w-5 h-5" />} label={currentLang.home} active />
-                  <NavItem icon={<Music className="w-5 h-5" />} label={currentLang.projectsNav} />
-                  <NavItem icon={<Mic2 className="w-5 h-5" />} label={currentLang.skills} />
-                  <NavItem icon={<Disc3 className="w-5 h-5" />} label={currentLang.education} />
-                  <NavItem icon={<Radio className="w-5 h-5" />} label={currentLang.contact} />
+                  <NavItem icon={<Home className="w-5 h-5" />} label={currentLang.home} active onClick={() => scrollToSection(headerRef)} />
+                  <NavItem icon={<Music className="w-5 h-5" />} label={currentLang.projectsNav} onClick={() => scrollToSection(projectsRef)} />
+                  <NavItem icon={<Mic2 className="w-5 h-5" />} label={currentLang.skills} onClick={() => scrollToSection(skillsRef)} />
+                  <NavItem icon={<Disc3 className="w-5 h-5" />} label={currentLang.experience} onClick={() => scrollToSection(experienceRef)} />
+                  <NavItem icon={<Radio className="w-5 h-5" />} label={currentLang.contact} onClick={() => scrollToSection(contactRef)} />
                 </nav>
 
                 <div className="mt-8">
@@ -353,12 +462,19 @@ function App() {
                     <Plus className="w-4 h-4 text-white/60 hover:text-white/90 cursor-pointer" />
                   </div>
                   <div className="space-y-1">
-                    <CollectionItem image="https://i.postimg.cc/VNqmKRpW/Kotlin.png" name="Desarrollo Móvil" type="Especialidad" />
-                    <CollectionItem image="https://logo.svgcdn.com/logos/javascript.png" name="Desarrollo Web" type="Especialidad" />
-                    <CollectionItem image="https://i.postimg.cc/HLwd62R6/flutter.png" name="Flutter & Kotlin" type="Stack" />
-                    <CollectionItem image="https://logo.svgcdn.com/logos/php.png" name="JavaScript & PHP" type="Stack" />
-                    <CollectionItem image="https://logo.svgcdn.com/simple-icons/bookstack-dark.png" name="Certificaciones" type="Logros" />
-                    <CollectionItem image="https://i.postimg.cc/6p1YDxJW/channels4-profile.jpg" name="ISIL - Software" type="Educación" />
+                    {specialtiesData.map((specialty, index) => (
+                      <button
+                        key={specialty.id}
+                        onClick={() => setSelectedSpecialty(index)}
+                        className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 transition-all group cursor-pointer"
+                      >
+                        <img src={specialty.image} alt={specialty.title} className="w-12 h-12 rounded-lg object-cover" />
+                        <div className="flex-1 text-left min-w-0">
+                          <h4 className="text-white font-medium text-sm truncate">{specialty.title}</h4>
+                          <p className="text-white/60 text-xs truncate">{specialty.category}</p>
+                        </div>
+                      </button>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -366,7 +482,110 @@ function App() {
 
             {/* Center Content */}
             <div className="flex-1 overflow-y-auto p-8 scrollbar-hide">
-              {selectedProject !== null ? (
+              {selectedSpecialty !== null ? (
+                /* Specialty Detail View */
+                <div className="h-full flex flex-col">
+                  {/* Navigation Header */}
+                  <div className="flex items-center justify-between mb-8">
+                    <button
+                      onClick={() => setSelectedSpecialty(null)}
+                      className="flex items-center gap-2 px-4 py-2 rounded-lg backdrop-blur-xl bg-white/10 hover:bg-white/20 transition-all"
+                    >
+                      <ArrowLeft className="w-5 h-5 text-white" />
+                      <span className="text-white font-medium">Atrás</span>
+                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setSelectedSpecialty(Math.max(0, selectedSpecialty - 1))}
+                        disabled={selectedSpecialty === 0}
+                        className="p-2 rounded-lg backdrop-blur-xl bg-white/10 hover:bg-white/20 transition-all disabled:opacity-30"
+                      >
+                        <ChevronLeft className="w-5 h-5 text-white" />
+                      </button>
+                      <button
+                        onClick={() => setSelectedSpecialty(Math.min(specialtiesData.length - 1, selectedSpecialty + 1))}
+                        disabled={selectedSpecialty === specialtiesData.length - 1}
+                        className="p-2 rounded-lg backdrop-blur-xl bg-white/10 hover:bg-white/20 transition-all disabled:opacity-30"
+                      >
+                        <ChevronRight className="w-5 h-5 text-white" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Specialty Content */}
+                  <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
+                    <div className="mb-8">
+                      <div className="flex items-start gap-6 mb-6">
+                        <img
+                          src={specialtiesData[selectedSpecialty].image}
+                          alt={specialtiesData[selectedSpecialty].title}
+                          className="w-32 h-32 rounded-2xl object-cover shadow-2xl"
+                        />
+                        <div className="flex-1">
+                          <h1 className="text-4xl font-bold text-white mb-2">{specialtiesData[selectedSpecialty].title}</h1>
+                          <p className="text-xl text-white/60 mb-4">{specialtiesData[selectedSpecialty].category}</p>
+                          {(specialtiesData[selectedSpecialty].experience || specialtiesData[selectedSpecialty].projects > 0) && (
+                            <div className="flex gap-4">
+                              {specialtiesData[selectedSpecialty].experience && (
+                                <div className="px-4 py-2 rounded-lg backdrop-blur-xl bg-white/10">
+                                  <p className="text-white/60 text-xs">Experiencia</p>
+                                  <p className="text-white font-semibold">{specialtiesData[selectedSpecialty].experience}</p>
+                                </div>
+                              )}
+                              {specialtiesData[selectedSpecialty].projects > 0 && (
+                                <div className="px-4 py-2 rounded-lg backdrop-blur-xl bg-white/10">
+                                  <p className="text-white/60 text-xs">Proyectos</p>
+                                  <p className="text-white font-semibold">{specialtiesData[selectedSpecialty].projects}</p>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="mb-8">
+                        <h3 className="text-xl font-bold text-white mb-4">Descripción</h3>
+                        <p className="text-white/80 leading-relaxed">{specialtiesData[selectedSpecialty].description}</p>
+                      </div>
+
+                      {/* Certificates Section */}
+                      {specialtiesData[selectedSpecialty].certificates && (
+                        <div className="mt-8">
+                          <h3 className="text-xl font-bold text-white mb-4">Certificados</h3>
+                          <div className="space-y-6">
+                            {specialtiesData[selectedSpecialty].certificates.map((cert, index) => (
+                              <div key={index} className="p-6 rounded-xl backdrop-blur-xl bg-white/10 border border-white/20">
+                                <div className="flex items-start justify-between mb-4">
+                                  <div className="flex-1">
+                                    <h4 className="text-white font-semibold text-lg mb-1">{cert.title}</h4>
+                                    <p className="text-white/60 text-sm">{cert.institution} • {cert.date}</p>
+                                  </div>
+                                  <a
+                                    href={cert.link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="px-4 py-2 rounded-lg backdrop-blur-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 text-sm font-medium transition-all flex items-center gap-2"
+                                  >
+                                    <Download className="w-4 h-4" />
+                                    Ver PDF
+                                  </a>
+                                </div>
+                                <div className="mt-4 rounded-lg overflow-hidden border border-white/20 bg-white">
+                                  <iframe
+                                    src={cert.link}
+                                    className="w-full h-96"
+                                    title={cert.title}
+                                  />
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ) : selectedProject !== null ? (
                 /* Project Detail View */
                 <div className="h-full flex flex-col">
                   {/* Navigation Header */}
@@ -470,7 +689,7 @@ function App() {
                 /* Normal Content */
                 <>
                   {/* Header */}
-                  <div className="mb-8">
+                  <div ref={headerRef} className="mb-8">
                     <h1 className={`text-4xl font-bold mb-2 text-transparent bg-clip-text transition-all duration-300 ${theme === 'dark'
                       ? 'bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400'
                       : 'bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500'
@@ -506,13 +725,54 @@ function App() {
                       <ArtistCircle name="Kotlin" image="https://i.postimg.cc/VNqmKRpW/Kotlin.png" />
                       <ArtistCircle name="Flutter" image="https://i.postimg.cc/HLwd62R6/flutter.png" />
                       <ArtistCircle name="JavaScript" image="https://logo.svgcdn.com/logos/javascript.png" />
-                      <ArtistCircle name="PHP" image="https://logo.svgcdn.com/logos/php.png" />
-                      <ArtistCircle name="Firebase" image="https://i.postimg.cc/zfC8xj60/firebase.png" />
+                      <ArtistCircle name="React" image="https://logo.svgcdn.com/logos/react.png" />
+                      <ArtistCircle name="Firebase" image="https://cdn.iconscout.com/icon/free/png-256/firebase-3628772-3030134.png" />
+                      <ArtistCircle name="PostgreSQL" image="https://logo.svgcdn.com/logos/postgresql.png" />
+                      <ArtistCircle name="Docker" image="https://logo.svgcdn.com/logos/docker-icon.png" />
+                    </div>
+                  </section>
+
+                  {/* Skills Section - Soft Skills */}
+                  <section ref={skillsRef} className="mb-10">
+                    <div className="flex items-center justify-between mb-5">
+                      <h2 className="text-2xl font-bold text-white">Habilidades</h2>
+                    </div>
+
+                    <div>
+                      <h3 className={`text-lg font-semibold mb-3 transition-all duration-300 ${theme === 'dark' ? 'text-pink-400' : 'text-pink-500'}`}>
+                        Habilidades Blandas
+                      </h3>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="flex items-center gap-2 p-3 rounded-lg backdrop-blur-xl bg-white/5 border border-white/10">
+                          <div className="w-2 h-2 rounded-full bg-pink-400"></div>
+                          <span className="text-white/80 text-sm">Trabajo en Equipo</span>
+                        </div>
+                        <div className="flex items-center gap-2 p-3 rounded-lg backdrop-blur-xl bg-white/5 border border-white/10">
+                          <div className="w-2 h-2 rounded-full bg-pink-400"></div>
+                          <span className="text-white/80 text-sm">Resolución de Problemas</span>
+                        </div>
+                        <div className="flex items-center gap-2 p-3 rounded-lg backdrop-blur-xl bg-white/5 border border-white/10">
+                          <div className="w-2 h-2 rounded-full bg-pink-400"></div>
+                          <span className="text-white/80 text-sm">Comunicación Efectiva</span>
+                        </div>
+                        <div className="flex items-center gap-2 p-3 rounded-lg backdrop-blur-xl bg-white/5 border border-white/10">
+                          <div className="w-2 h-2 rounded-full bg-pink-400"></div>
+                          <span className="text-white/80 text-sm">Adaptabilidad</span>
+                        </div>
+                        <div className="flex items-center gap-2 p-3 rounded-lg backdrop-blur-xl bg-white/5 border border-white/10">
+                          <div className="w-2 h-2 rounded-full bg-pink-400"></div>
+                          <span className="text-white/80 text-sm">Aprendizaje Continuo</span>
+                        </div>
+                        <div className="flex items-center gap-2 p-3 rounded-lg backdrop-blur-xl bg-white/5 border border-white/10">
+                          <div className="w-2 h-2 rounded-full bg-pink-400"></div>
+                          <span className="text-white/80 text-sm">Gestión del Tiempo</span>
+                        </div>
+                      </div>
                     </div>
                   </section>
 
                   {/* Projects Section - Now Second */}
-                  <section className="mb-10">
+                  <section ref={projectsRef} className="mb-10">
                     <div className="flex items-center justify-between mb-5">
                       <h2 className="text-2xl font-bold text-white">{currentLang.projects}</h2>
                       <button className="text-white/40 hover:text-white/80 text-sm transition-all">{currentLang.seeAll}</button>
@@ -540,7 +800,7 @@ function App() {
                   </section>
 
                   {/* Recently Played */}
-                  <section>
+                  <section ref={experienceRef}>
                     <div className="flex items-center justify-between mb-5">
                       <h2 className="text-2xl font-bold text-white">{currentLang.experience}</h2>
                       <button className="text-white/60 hover:text-white text-sm transition-all">{currentLang.seeAll}</button>
@@ -586,7 +846,7 @@ function App() {
                   </div>
                 </div>
 
-                <div>
+                <div ref={contactRef}>
                   <div className="flex items-center justify-between mb-4">
                     <h3 className={`font-semibold transition-all duration-300 ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-500'
                       }`}>{currentLang.contact}</h3>
@@ -634,9 +894,9 @@ function App() {
             {/* Song Info */}
             <div className="flex items-center gap-4 w-64">
               <img
-                src="https://logo.svgcdn.com/cib/apple-music-dark.png"
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Apple_Music_icon.svg/200px-Apple_Music_icon.svg.png"
                 alt="Apple Music"
-                className="w-14 h-14 rounded-lg object-cover p-2 bg-white/10"
+                className="w-14 h-14 rounded-lg object-cover"
               />
               <div>
                 <h4 className="text-white font-semibold text-sm">Música</h4>
@@ -736,15 +996,19 @@ function App() {
   );
 }
 
-function NavItem({ icon, label, active = false }: { icon: React.ReactNode; label: string; active?: boolean }) {
+function NavItem({ icon, label, active = false, onClick }: { icon: React.ReactNode; label: string; active?: boolean; onClick?: () => void }) {
   return (
-    <button className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all ${active ? 'bg-white/20' : 'hover:bg-white/10'
-      }`}>
+    <button
+      onClick={onClick}
+      className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all ${active ? 'bg-white/20' : 'hover:bg-white/10'
+        }`}>
       <span className={active ? 'text-cyan-400' : 'text-white/60 hover:text-cyan-300'}>{icon}</span>
-      <span className={`font-medium transition-all ${active
+      <span className={`text-sm font-medium transition-all ${active
         ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400'
         : 'text-white/80 hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-cyan-300 hover:to-purple-300'
-        }`}>{label}</span>
+        }`}>
+        {label}
+      </span>
     </button>
   );
 }
