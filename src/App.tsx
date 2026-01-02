@@ -1,7 +1,23 @@
+// ============================================
+// IMPORTS - Librerías y Componentes Necesarios
+// ============================================
+
+// Importamos todos los iconos que usaremos de la librería lucide-react
+// Estos iconos se usan en toda la interfaz (navegación, reproductor, botones, etc.)
 import { Home, Music, Mic2, Disc3, Radio, Search, Bell, Settings, User, Plus, Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, Volume2, List, Heart, Clock, ArrowLeft, ChevronLeft, ChevronRight, X, Download } from 'lucide-react';
+
+// Importamos hooks de React:
+// - useState: Para manejar estados (variables que cambian y re-renderizan la UI)
+// - useRef: Para referencias a elementos del DOM (scroll, audio player)
+// - useEffect: Para efectos secundarios (ejecutar código cuando algo cambia)
 import { useState, useRef, useEffect } from 'react';
 
-// Project data with details
+// ============================================
+// DATOS DE PROYECTOS
+// ============================================
+// Array con información de todos los proyectos del portfolio
+// Cada proyecto tiene: id, título, tecnología, año, imagen, descripción, características y tecnologías
+
 const projectsData = [
   {
     id: 1,
@@ -11,7 +27,8 @@ const projectsData = [
     image: "https://i.postimg.cc/HLwd62R6/flutter.png",
     description: "Aplicación móvil para gestión de tareas con sincronización en tiempo real",
     features: ["Autenticación de usuarios", "Sincronización en tiempo real", "Notificaciones push", "Modo offline"],
-    technologies: ["Flutter", "Firebase", "Dart", "Cloud Firestore"]
+    technologies: ["Flutter", "Firebase", "Dart", "Cloud Firestore"],
+    demo: "https://www.youtube.com/watch?v=example"
   },
   {
     id: 2,
@@ -21,7 +38,8 @@ const projectsData = [
     image: "https://logo.svgcdn.com/logos/php.png",
     description: "Plataforma de comercio electrónico con carrito de compras y pasarela de pago",
     features: ["Carrito de compras", "Pasarela de pago", "Panel de administración", "Sistema de inventario"],
-    technologies: ["React", "PHP", "MySQL", "Stripe API"]
+    technologies: ["React", "PHP", "MySQL", "Stripe API"],
+    demo: "https://www.youtube.com/watch?v=example"
   },
   {
     id: 3,
@@ -31,7 +49,8 @@ const projectsData = [
     image: "https://logo.svgcdn.com/logos/javascript.png",
     description: "Portafolio personal con animaciones y efectos visuales modernos",
     features: ["Animaciones CSS", "Diseño responsive", "Modo oscuro/claro", "Reproductor de música"],
-    technologies: ["JavaScript", "CSS3", "HTML5", "Vite"]
+    technologies: ["JavaScript", "CSS3", "HTML5", "Vite"],
+    demo: "https://www.youtube.com/watch?v=example"
   },
   {
     id: 4,
@@ -41,7 +60,8 @@ const projectsData = [
     image: "https://i.postimg.cc/VNqmKRpW/Kotlin.png",
     description: "Aplicación Android nativa con Material Design y arquitectura MVVM",
     features: ["Material Design 3", "Arquitectura MVVM", "Room Database", "Retrofit API"],
-    technologies: ["Kotlin", "Android SDK", "Jetpack Compose", "Coroutines"]
+    technologies: ["Kotlin", "Android SDK", "Jetpack Compose", "Coroutines"],
+    demo: "https://www.youtube.com/watch?v=example"
   },
   {
     id: 5,
@@ -51,7 +71,8 @@ const projectsData = [
     image: "https://logo.svgcdn.com/logos/firebase.png",
     description: "Chat en tiempo real con soporte para mensajes multimedia",
     features: ["Mensajería en tiempo real", "Envío de imágenes", "Indicadores de escritura", "Historial de mensajes"],
-    technologies: ["React", "Firebase Realtime DB", "Cloud Storage", "Authentication"]
+    technologies: ["React", "Firebase Realtime DB", "Cloud Storage", "Authentication"],
+    demo: "https://www.youtube.com/watch?v=example"
   },
   {
     id: 6,
@@ -61,22 +82,29 @@ const projectsData = [
     image: "https://logo.svgcdn.com/logos/typescript.png",
     description: "Dashboard de análisis con gráficos interactivos y reportes en tiempo real",
     features: ["Gráficos interactivos", "Exportación de datos", "Filtros avanzados", "Reportes PDF"],
-    technologies: ["TypeScript", "Next.js", "Chart.js", "Tailwind CSS"]
+    technologies: ["TypeScript", "Next.js", "Chart.js", "Tailwind CSS"],
+    demo: "https://www.youtube.com/watch?v=example"
   }
 ];
 
-// Specialties data
+// ============================================
+// DATOS DE ESPECIALIDADES
+// ============================================
+// Array con información de las especialidades profesionales
+// Incluye: Desarrollo Móvil, Web, Flutter & Kotlin, JavaScript & PHP, Certificaciones, ISIL
+// Cada especialidad puede tener certificados (solo Certificaciones los tiene)
+
 const specialtiesData = [
   {
     id: 1,
-    title: "Desarrollo Móvil",
-    category: "Especialidad",
-    image: "https://i.postimg.cc/VNqmKRpW/Kotlin.png",
+    title: "Desarrollo Móvil", // Nombre de la especialidad
+    category: "Especialidad", // Categoría para mostrar en la UI
+    image: "https://i.postimg.cc/VNqmKRpW/Kotlin.png", // Imagen representativa
     description: "Desarrollo de aplicaciones móviles nativas y multiplataforma con enfoque en experiencia de usuario y rendimiento óptimo.",
-    skills: ["Kotlin", "Flutter", "Android SDK", "iOS Development", "React Native", "Mobile UI/UX"],
-    experience: "3+ años",
-    projects: 8,
-    technologies: ["Kotlin", "Flutter", "Dart", "Swift", "Java"]
+    skills: ["Kotlin", "Flutter", "Android SDK", "iOS Development", "React Native", "Mobile UI/UX"], // Habilidades técnicas
+    experience: "3+ años", // Años de experiencia
+    projects: 8, // Número de proyectos realizados
+    technologies: ["Kotlin", "Flutter", "Dart", "Swift", "Java"] // Tecnologías utilizadas
   },
   {
     id: 2,
@@ -89,28 +117,7 @@ const specialtiesData = [
     projects: 12,
     technologies: ["JavaScript", "TypeScript", "React", "Next.js", "Tailwind CSS"]
   },
-  {
-    id: 3,
-    title: "Flutter & Kotlin",
-    category: "Stack",
-    image: "https://i.postimg.cc/HLwd62R6/flutter.png",
-    description: "Stack especializado en desarrollo móvil multiplataforma con Flutter y nativo Android con Kotlin.",
-    skills: ["Flutter Widgets", "State Management", "Kotlin Coroutines", "Material Design", "Firebase Integration"],
-    experience: "3+ años",
-    projects: 6,
-    technologies: ["Flutter", "Dart", "Kotlin", "Firebase", "Android Studio"]
-  },
-  {
-    id: 4,
-    title: "JavaScript & PHP",
-    category: "Stack",
-    image: "https://logo.svgcdn.com/logos/php.png",
-    description: "Stack full-stack para desarrollo web con JavaScript en frontend y PHP en backend.",
-    skills: ["JavaScript ES6+", "PHP 8", "MySQL", "Laravel", "REST APIs", "Authentication"],
-    experience: "4+ años",
-    projects: 10,
-    technologies: ["JavaScript", "PHP", "MySQL", "Laravel", "jQuery"]
-  },
+
   {
     id: 5,
     title: "Certificaciones",
@@ -169,52 +176,99 @@ const tracks = [
   { id: 10, title: "Piano Moment", artist: "Bensound", preview: "https://www.bensound.com/bensound-music/bensound-pianomoment.mp3", duration: 30 },
 ];
 
+// ============================================
+// COMPONENTE PRINCIPAL APP
+// ============================================
+// Este es el componente raíz que contiene TODA la aplicación
+
 function App() {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTrack, setCurrentTrack] = useState(0);
-  const [progress, setProgress] = useState(0);
-  const [volume, setVolume] = useState(0.7);
-  const [language, setLanguage] = useState<'es' | 'en'>('es');
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
-  const [selectedProject, setSelectedProject] = useState<number | null>(null);
-  const [selectedSpecialty, setSelectedSpecialty] = useState<number | null>(null);
-  const [isDemoMode, setIsDemoMode] = useState(false);
-  const audioRef = useRef<HTMLAudioElement>(null);
+  // ============================================
+  // ESTADOS DEL REPRODUCTOR DE MÚSICA
+  // ============================================
+  // useState crea variables que cuando cambian, React re-renderiza la UI
 
-  // Refs for scroll navigation
-  const headerRef = useRef<HTMLDivElement>(null);
-  const projectsRef = useRef<HTMLDivElement>(null);
-  const skillsRef = useRef<HTMLDivElement>(null);
-  const experienceRef = useRef<HTMLDivElement>(null);
-  const contactRef = useRef<HTMLDivElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false); // true = reproduciendo, false = pausado
+  const [currentTrack, setCurrentTrack] = useState(0); // Índice de la canción actual (0-9)
+  const [progress, setProgress] = useState(0); // Progreso de la canción (0-100%)
+  const [volume, setVolume] = useState(0.7); // Volumen del audio (0.0-1.0)
 
-  // Detect system theme preference on mount
+  // ============================================
+  // ESTADOS DE IDIOMA Y TEMA
+  // ============================================
+
+  const [language, setLanguage] = useState<'es' | 'en'>('es'); // Idioma actual: 'es' o 'en'
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark'); // Tema: 'dark' o 'light'
+
+  // ============================================
+  // ESTADOS DE VISTAS DE DETALLE
+  // ============================================
+
+  const [selectedProject, setSelectedProject] = useState<number | null>(null); // null = no hay proyecto seleccionado, número = índice del proyecto
+  const [selectedSpecialty, setSelectedSpecialty] = useState<number | null>(null); // null = no hay especialidad seleccionada, número = índice
+  const [isDemoMode, setIsDemoMode] = useState(false); // Modo demo (no se usa actualmente)
+
+  // ============================================
+  // REFERENCIAS (useRef)
+  // ============================================
+  // useRef crea referencias a elementos del DOM que NO causan re-render cuando cambian
+
+  const audioRef = useRef<HTMLAudioElement>(null); // Referencia al elemento <audio> del reproductor
+
+  // Referencias para navegación por scroll (apuntan a secciones del HTML)
+  const headerRef = useRef<HTMLDivElement>(null); // Referencia a la sección del header
+  const projectsRef = useRef<HTMLDivElement>(null); // Referencia a la sección de proyectos
+  const skillsRef = useRef<HTMLDivElement>(null); // Referencia a la sección de habilidades
+  const experienceRef = useRef<HTMLDivElement>(null); // Referencia a la sección de experiencia
+  const contactRef = useRef<HTMLDivElement>(null); // Referencia a la sección de contacto
+
+  // ============================================
+  // EFECTO: DETECTAR TEMA DEL SISTEMA
+  // ============================================
+  // useEffect se ejecuta cuando el componente se monta (primera vez que se carga)
+  // Este efecto detecta si el usuario tiene modo oscuro activado en su sistema
+
   useEffect(() => {
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    setTheme(prefersDark ? 'dark' : 'light');
-  }, []);
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches; // Detecta preferencia del sistema
+    setTheme(prefersDark ? 'dark' : 'light'); // Establece el tema según la preferencia
+  }, []); // [] = solo se ejecuta una vez al montar el componente
 
-  // Scroll to section function - closes detail views first
+
+  // ============================================
+  // FUNCIÓN: SCROLL A SECCIÓN
+  // ============================================
+  // Esta función hace scroll suave a una sección específica de la página
+  // IMPORTANTE: Primero cierra cualquier vista de detalle abierta antes de hacer scroll
+
   const scrollToSection = (ref: React.RefObject<HTMLDivElement>) => {
-    // Close any open detail views first
-    setSelectedSpecialty(null);
-    setSelectedProject(null);
-    // Small delay to allow views to close before scrolling
+    // Paso 1: Cerrar vistas de detalle (si hay alguna abierta)
+    setSelectedSpecialty(null); // Cierra vista de especialidad
+    setSelectedProject(null); // Cierra vista de proyecto
+
+    // Paso 2: Esperar 100ms para que las vistas se cierren antes de hacer scroll
     setTimeout(() => {
+      // Paso 3: Hacer scroll suave al elemento referenciado
       ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
+    }, 100); // 100ms de delay
   };
 
-  // Set initial volume
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (audio) {
-      audio.volume = volume;
-    }
-  }, [volume]);
+  // ============================================
+  // EFECTO: ESTABLECER VOLUMEN INICIAL
+  // ============================================
+  // Este efecto actualiza el volumen del reproductor cada vez que cambia el estado 'volume'
 
-  // Color rotation for bottom player
-  const [colorIndex, setColorIndex] = useState(0);
+  useEffect(() => {
+    const audio = audioRef.current; // Obtiene el elemento de audio
+    if (audio) {
+      audio.volume = volume; // Establece el volumen (0.0 a 1.0)
+    }
+  }, [volume]); // Se ejecuta cada vez que 'volume' cambia
+
+  // ============================================
+  // SISTEMA DE COLORES ROTATIVOS
+  // ============================================
+  // Colores pastel que rotan en el reproductor de música cuando está reproduciendo
+
+  const [colorIndex, setColorIndex] = useState(0); // Índice del color actual (0-6)
   const pastelColors = [
     { ring: 'ring-rose-300/40', shadow: 'rgba(251,207,232,0.4)' },      // Rosa
     { ring: 'ring-purple-300/40', shadow: 'rgba(216,180,254,0.4)' },    // Púrpura
@@ -225,16 +279,23 @@ function App() {
     { ring: 'ring-orange-300/40', shadow: 'rgba(253,186,116,0.4)' },    // Naranja
   ];
 
-  // Change color every 3 seconds when playing
+  // ============================================
+  // EFECTO: ROTACIÓN DE COLORES
+  // ============================================
+  // Cambia el color cada 3 segundos cuando la música está reproduciendo
+
   useEffect(() => {
-    if (!isPlaying) return;
+    if (!isPlaying) return; // Si no está reproduciendo, no hacer nada
 
+    // Crear intervalo que cambia el color cada 3 segundos
     const interval = setInterval(() => {
-      setColorIndex((prev) => (prev + 1) % pastelColors.length);
-    }, 3000);
+      setColorIndex((prev) => (prev + 1) % pastelColors.length); // Incrementa y vuelve a 0 al llegar al final
+    }, 3000); // 3000ms = 3 segundos
 
+    // Limpiar intervalo cuando el componente se desmonta o isPlaying cambia
     return () => clearInterval(interval);
-  }, [isPlaying, pastelColors.length]);
+  }, [isPlaying, pastelColors.length]); // Se ejecuta cuando isPlaying cambia
+
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -669,6 +730,19 @@ function App() {
                             </div>
                           ))}
                         </div>
+                      </div>
+
+                      {/* Demo */}
+                      <div className="mb-8">
+                        <h2 className="text-2xl font-bold text-pink-400 mb-4">Demo</h2>
+                        <a
+                          href={projectsData[selectedProject].demo}
+                          target="_blank"
+                          className="flex items-center gap-3 p-4 rounded-lg backdrop-blur-xl bg-white/5 hover:bg-white/10 transition-all"
+                        >
+                          <div className="w-2 h-2 rounded-full bg-pink-400"></div>
+                          <span className="text-white/80">Ver Demo en YouTube</span>
+                        </a>
                       </div>
 
                       {/* Technologies */}
